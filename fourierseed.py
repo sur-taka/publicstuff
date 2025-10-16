@@ -21,6 +21,7 @@ class Fourierpicture:
         self.fig = plt.figure(figsize=(10,10),dpi=100)
         self.plot = self.fig.add_subplot()
         self.plot.axis("off")
+        self.file="pic.png"
 
     def makearray(self):
         if self.seed!=None:
@@ -58,8 +59,17 @@ class Fourierpicture:
         self.makeplot()
         self.showplot()
 
+    def save(self):
+        c=self.color
+        self.color="w"
+        self.makeplot()
+        self.fig.savefig(self.file, transparent=True)
+        self.color=c
+        self.makeplot()
+
 
 fourier = Fourierpicture()
+fourier.plot.set_facecolor((1,1,1))
 window = Tk()
 f1 = Frame(window)
 f2 = Frame(window)
@@ -68,6 +78,12 @@ f2.grid(row=0,column=1,sticky="nsew")
 window.title("Fourier Pictures")
 window.geometry("1000x1000")
 fourier.addCanvas(f2)
+
+def _quit():
+    window.quit()
+    window.destroy()
+
+window.protocol("WM_DELETE_WINDOW", _quit)
 
 
 doall_button = Button(f1,command=fourier.doall,text="Plot")
@@ -95,9 +111,18 @@ def setseed():
         fourier.seed=None
     else:
         fourier.seed=ent
-    print(fourier.seed)
 setseed_button = Button(f1,command=setseed,text="Set Seed")
 setseed_button.pack()
+
+enter_file = Entry(f1,width=15)
+enter_file.pack()
+def setfile():
+    fourier.file=enter_file.get()+".png"
+setfile_button = Button(f1,command=setfile,text="Set File")
+setfile_button.pack()
+
+save_button = Button(f1,command=fourier.save,text="Save")
+save_button.pack()
 
 
 
