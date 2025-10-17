@@ -1,10 +1,9 @@
 import numpy as np
 from matplotlib import pyplot as plt
-from matplotlib.figure import Figure
 import random as rnd
 from tkinter import *
-from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
-NavigationToolbar2Tk)
+from tkinter import ttk
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class Fourierpicture:
     def __init__(self,sym=5,len=10,dec=np.sqrt,n=10000,color="k"):
@@ -22,10 +21,17 @@ class Fourierpicture:
         self.plot = self.fig.add_subplot()
         self.plot.axis("off")
         self.file="pic.png"
+        self.enter_seed=None
 
     def makearray(self):
+        seed=None
         if self.seed!=None:
-            rnd.seed(self.seed)
+            seed=self.seed
+        else:
+            seed=str(rnd.random())
+        rnd.seed(seed)
+        self.enter_seed.delete(0)
+        self.enter_seed.insert(0,seed)
         arr=[]
         for i in range(self.l):
             re = rnd.random()-self.dec(i)
@@ -60,12 +66,7 @@ class Fourierpicture:
         self.showplot()
 
     def save(self):
-        c=self.color
-        self.color="w"
-        self.makeplot()
         self.fig.savefig(self.file, transparent=True)
-        self.color=c
-        self.makeplot()
 
 
 fourier = Fourierpicture()
@@ -105,6 +106,7 @@ setlen_button.pack()
 
 enter_seed = Entry(f1,width=15)
 enter_seed.pack()
+fourier.enter_seed=enter_seed
 def setseed():
     ent=enter_seed.get()
     if ent=="":
@@ -113,6 +115,16 @@ def setseed():
         fourier.seed=ent
 setseed_button = Button(f1,command=setseed,text="Set Seed")
 setseed_button.pack()
+
+choose_color = ttk.Combobox(f1)
+choose_color['values'] = ("Black","White","Red","Blue","Green","Yellow","Cyan","Magenta")
+choose_color.current(0)
+choose_color.pack()
+colors=["k","w","r","b","g","y","c","m"]
+def setcolor(e):
+    cur=choose_color.current()
+    fourier.color=colors[cur]
+choose_color.bind("<<ComboboxSelected>>",setcolor)
 
 enter_file = Entry(f1,width=15)
 enter_file.pack()
